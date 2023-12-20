@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trier Membres</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #ff9999;
+        }
+    </style>
+    <script>
+        // Désactiver les boutons de navigation du navigateur
+        history.pushState(null, null, document.URL);
+        window.addEventListener('popstate', function () {
+            history.pushState(null, null, document.URL);
+        });
+    </script>
+</head>
+<body class="container">
+    <h2 class="mt-3">Membres Triés</h2>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    
+    {% for mois, details_mois in membres_par_mois.items() %}
+    <div class="mt-3">
+        <h2>{{ details_mois['numero_mois'] }} - {{ details_mois['membres'][0][5].strftime('%B')|replace('Ã©', 'é') }}</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Date de Naissance</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for membre in details_mois['membres'] %}
+                <tr>
+                    <td>{{ membre[0] }}</td>
+                    <td>{{ membre[3] }}</td>
+                    <td>{{ membre[4] }}</td>
+                    <td>{{ membre[5].strftime('%d %B')|replace('Ã©', 'é') }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('supprimer_membre', membre_id=membre[0]) }}">
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <form method="POST" action="{{ url_for('envoyer_message_whatsapp_route', mois=details_mois['numero_mois']) }}" class="mt-3">
+            <input type="hidden" name="mois" value="{{ details_mois['numero_mois'] }}">
+            <button type="submit" class="btn btn-primary">Envoyer le message WhatsApp</button>
+        </form>
+        
+        
+                {% endfor %}
+
+        <form method="GET" action="{{ url_for('ajouter_membre') }}" class="mt-3">
+            <button type="submit" class="btn btn-info">Retour vers Ajouter Membre</button>
+        </form>
+
+    </div>
+    <div class="mt-3">
+        <footer>
+            <p>Ceci est le pied de page de votre application.</p>
+        </footer>
+    </div>
+</body>
+</html>
